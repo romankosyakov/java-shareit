@@ -15,4 +15,5 @@ public interface ItemStorage {
 
     List<Item> getUserItems(Integer userId);
 
+    void update(Item item);
 }

@@ -45,4 +45,10 @@ public class InMemoryItemStorage implements ItemStorage {
                 .toList();
     }
 
+    public void update(Item item) {
+        if (items.containsKey(item.getId())) {
+            items.put(item.getId(), item);
+            log.info("Обновлена вещь в хранилище: '{}' (ID: {})", item.getName(), item.getId());
+        }
+    }
 }

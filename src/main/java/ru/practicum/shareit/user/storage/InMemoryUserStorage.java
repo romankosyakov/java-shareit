@@ -2,8 +2,6 @@ package ru.practicum.shareit.user.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.HashMap;
@@ -18,14 +16,10 @@ public class InMemoryUserStorage implements UserStorage {
     private Integer id = 1;
 
     public Optional<User> getUser(Integer id) {
-        if (id <= 0) {
-            throw new ValidationException("ID должен быть больше нуля");
+        if (id == null || id <= 0) {
+            return Optional.empty();
         }
-        Optional<User> user = Optional.ofNullable(users.get(id));
-        if (user.isEmpty()) {
-            throw new NotFoundException("Пользователь с ID " + id + " не найден");
-        }
-        return user;
+        return Optional.ofNullable(users.get(id));
     }
 
     public List<User> getAllUsers() {
@@ -33,6 +27,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public User addNew(User user) {
+
         User newUser = User.builder()
                 .id(id++)
                 .email(user.getEmail())
@@ -43,7 +38,13 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Добавлен новый пользователь: '{}' (ID: {})",
                 newUser.getName(),
                 newUser.getId());
-        return user;
+        return newUser;
+    }
+
+    @Override
+    public void update(User user) {
+        users.put(user.getId(), user);
+        log.info("Обновлен пользователь в хранилище: '{}' (ID: {})", user.getName(), user.getId());
     }
 
     public void delete(Integer id) {

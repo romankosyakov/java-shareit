@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.error.dto.ErrorResponseDto;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 
@@ -16,6 +17,13 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDto handleEmailConflictException(final ConflictException e) {
+        log.error("Конфликт email: {}", e.getMessage());
+        return new ErrorResponseDto("Conflict", e.getMessage());
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

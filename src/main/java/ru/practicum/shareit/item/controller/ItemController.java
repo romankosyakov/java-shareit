@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -28,7 +30,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemResponseDto getItem(@PathVariable Integer itemId) {
+    public ItemResponseDto getItem(@PathVariable("id") Integer itemId) {
         log.debug("Вызван метод получения вещи с ID: {}", itemId);
         return itemService.getItem(itemId);
     }
@@ -43,12 +45,12 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ItemResponseDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                       @RequestBody UpdateItemDto updateItemDto,
-                                      @PathVariable Integer id) {
+                                      @PathVariable("id") Integer id) {
         return itemService.updateItem(userId, id, updateItemDto);
     }
 
     @GetMapping("/search")
-    public Collection<ItemResponseDto> searchItems(@RequestParam(value = "text") String text) {
+    public Collection<ItemResponseDto> searchItems(@RequestParam(value = "text", required = false) String text) {
         return itemService.searchItems(text);
     }
 }

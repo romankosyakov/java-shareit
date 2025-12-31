@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class UserController {
     private final UserService userService;
 
@@ -28,28 +30,28 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getUser(@PathVariable Integer id) {
+    public UserResponseDto getUser(@PathVariable("id") Integer id) {
         log.debug("Вызван метод получения пользователя с ID: {}", id);
         return userService.getUser(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto addNewUser(@Validated(CreateValidation.class) @RequestBody NewUserDto newUserDto) {
+    public UserResponseDto addNewUser(@Validated(CreateValidation.class) @Valid @RequestBody NewUserDto newUserDto) {
         log.debug("Вызван метод добавления пользователя");
         return userService.addNewUser(newUserDto);
     }
 
     @PatchMapping("/{id}")
-    public UserResponseDto updateUser(@Validated(UpdateValidation.class) @PathVariable Integer id,
+    public UserResponseDto updateUser(@Validated(UpdateValidation.class) @PathVariable("id") Integer id,
                                       @RequestBody UpdateUserDto updateUserDto) {
         log.debug("Вызван метод обновления пользователя с ID: {}", id);
-        return userService.updateUser(updateUserDto, id);
+        return userService.updateUser(id, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteUser(@PathVariable Integer id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable("id") Integer id) {
         log.debug("Вызван метод удаления пользователя");
         userService.deleteUser(id);
     }

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.dto.NewUserDto;
@@ -14,7 +15,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
-import java.util.Objects;
 
 @Data
 @Service
@@ -37,23 +37,36 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserResponseDto addNewUser(NewUserDto newUserDto) {
-        return UserMapper.toResponseDto(userStorage.addNew(UserMapper.toEntity(newUserDto)));
-    }
+        User user = UserMapper.toEntity(newUserDto);
 
-    public UserResponseDto updateUser(UpdateUserDto updateUserDto, Integer id) {
+        if (user.getEmail() == null) {
+            throw new ValidationException("Email обязателен для заполнения.");
+        }
+        boolean isNotAlreadySaved = userStorage.findByEmail(user.getEmail()).isEmpty();
 
-        if (userStorage.existsByEmail(updateUserDto.getEmail())
-                && !Objects.equals(userStorage.findByEmail(updateUserDto.getEmail()).get().getId(), id)) {
-            throw new ValidationException("e-mail уже используется");
+        if (!isNotAlreadySaved) {
+            throw new ConflictException("Пользователь с таким email уже существует.");
         }
 
+        return UserMapper.toResponseDto(userStorage.addNew(user));
+    }
+
+    public UserResponseDto updateUser(Integer id, UpdateUserDto updateUserDto) {  // Изменить сигнатуру
         User user = userStorage.getUser(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
+
+        // Проверка уникальности email
+        if (updateUserDto.getEmail() != null && !updateUserDto.getEmail().equals(user.getEmail())) {
+            if (userStorage.existsByEmail(updateUserDto.getEmail())) {
+                throw new ConflictException("Email уже используется другим пользователем");
+            }
+        }
 
         UserMapper.updateEntityFromDto(updateUserDto, user);
 
-        log.info("Обновлен пользователь: '{}' (ID: {})", user.getName(), user.getId());
+        userStorage.update(user);
 
+        log.info("Обновлен пользователь: '{}' (ID: {})", user.getName(), user.getId());
         return UserMapper.toResponseDto(user);
     }
 

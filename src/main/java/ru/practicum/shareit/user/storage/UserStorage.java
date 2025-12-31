@@ -19,4 +19,6 @@ public interface UserStorage {
     boolean existsByEmail(String email);
 
     Optional<User> findByEmail(String email);
+
+    void update(User user);
 }

@@ -12,7 +12,7 @@ public class ItemMapper {
         return Item.builder()
                 .name(newItemDto.getName())
                 .description(newItemDto.getDescription())
-                .available(newItemDto.getAvailable() != null ? newItemDto.getAvailable() : false)
+                .available(newItemDto.getAvailable())
                 .userId(userId)
                 .build();
     }
