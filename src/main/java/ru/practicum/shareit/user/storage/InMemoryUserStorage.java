@@ -15,6 +15,7 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private Integer id = 1;
 
+    @Override
     public Optional<User> getUser(Integer id) {
         if (id == null || id <= 0) {
             return Optional.empty();
@@ -22,10 +23,12 @@ public class InMemoryUserStorage implements UserStorage {
         return Optional.ofNullable(users.get(id));
     }
 
+    @Override
     public List<User> getAllUsers() {
         return List.copyOf(users.values());
     }
 
+    @Override
     public User addNew(User user) {
 
         User newUser = User.builder()
@@ -47,14 +50,17 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Обновлен пользователь в хранилище: '{}' (ID: {})", user.getName(), user.getId());
     }
 
+    @Override
     public void delete(Integer id) {
         users.remove(id);
     }
 
+    @Override
     public boolean existsById(Integer id) {
         return users.containsKey(id);
     }
 
+    @Override
     public boolean existsByEmail(String email) {
         return users.values().stream()
                 .anyMatch(user -> user.getEmail().equalsIgnoreCase(email));

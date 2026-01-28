@@ -23,6 +23,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
+    @Override
     public List<UserResponseDto> getAllUsers() {
         return userStorage.getAllUsers()
                 .stream()
@@ -30,12 +31,14 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    @Override
     public UserResponseDto getUser(Integer id) {
         return userStorage.getUser(id)
                 .map(UserMapper::toResponseDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь c id: " + id + " не найден"));
     }
 
+    @Override
     public UserResponseDto addNewUser(NewUserDto newUserDto) {
         User user = UserMapper.toEntity(newUserDto);
 
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponseDto(userStorage.addNew(user));
     }
 
+    @Override
     public UserResponseDto updateUser(Integer id, UpdateUserDto updateUserDto) {  // Изменить сигнатуру
         User user = userStorage.getUser(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
@@ -70,6 +74,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponseDto(user);
     }
 
+    @Override
     public void deleteUser(Integer id) {
         userStorage.delete(id);
     }

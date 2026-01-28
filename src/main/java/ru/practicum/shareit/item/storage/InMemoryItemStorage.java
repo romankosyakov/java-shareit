@@ -12,10 +12,12 @@ public class InMemoryItemStorage implements ItemStorage {
     private static final Map<Integer, Item> items = new HashMap<>();
     private Integer id = 1;
 
+    @Override
     public Optional<Item> getItem(Integer itemId) {
         return Optional.ofNullable(items.get(itemId));
     }
 
+    @Override
     public List<Item> searchItems(String query) {
         return items.values()
                 .stream()
@@ -24,6 +26,7 @@ public class InMemoryItemStorage implements ItemStorage {
                 .toList();
     }
 
+    @Override
     public Item addNewItem(Item item) {
         Item newItem = Item.builder()
                 .id(id++)
@@ -37,7 +40,7 @@ public class InMemoryItemStorage implements ItemStorage {
         return newItem;
     }
 
-
+    @Override
     public List<Item> getUserItems(Integer userId) {
         return items.values()
                 .stream()
@@ -45,6 +48,7 @@ public class InMemoryItemStorage implements ItemStorage {
                 .toList();
     }
 
+    @Override
     public void update(Item item) {
         if (items.containsKey(item.getId())) {
             items.put(item.getId(), item);

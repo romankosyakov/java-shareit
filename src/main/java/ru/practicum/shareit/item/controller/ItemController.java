@@ -10,6 +10,8 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.dto.NewItemDto;
 import ru.practicum.shareit.item.dto.UpdateItemDto;
+import ru.practicum.shareit.validation.CreateValidation;
+import ru.practicum.shareit.validation.UpdateValidation;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,13 +39,14 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemResponseDto addNewItem(@RequestHeader("X-Sharer-User-Id") Integer id,
+    public ItemResponseDto addNewItem(@Validated(CreateValidation.class) @RequestHeader("X-Sharer-User-Id") Integer id,
                                       @RequestBody @Valid NewItemDto newItemDto) {
         return itemService.addNewItem(id, newItemDto);
     }
 
     @PatchMapping("/{id}")
-    public ItemResponseDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+    public ItemResponseDto updateItem(@Validated(UpdateValidation.class)
+                                      @RequestHeader("X-Sharer-User-Id") Integer userId,
                                       @RequestBody UpdateItemDto updateItemDto,
                                       @PathVariable("id") Integer id) {
         return itemService.updateItem(userId, id, updateItemDto);
