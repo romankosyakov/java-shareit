@@ -41,7 +41,7 @@ public final class BookingMapper {
                 )
                 .booker(
                         BookingDto.BookingUserDto.builder()
-                                .id(booking.getId())
+                                .id(booking.getBooker().getId())
                                 .name(booking.getBooker().getName())
                                 .build()
                 )
@@ -52,10 +52,11 @@ public final class BookingMapper {
         if (booking == null) {
             return null;
         }
-
         return BookingShortDto.builder()
                 .id(booking.getId())
-                .bookerId(booking.getId())
+                .bookerId(booking.getBooker().getId())
+                .itemId(booking.getItem().getId())
+                .itemName(booking.getItem().getName())
                 .build();
     }
 }

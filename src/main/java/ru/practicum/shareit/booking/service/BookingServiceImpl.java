@@ -131,9 +131,9 @@ public class BookingServiceImpl implements BookingService {
         BooleanBuilder predicate = new BooleanBuilder();
 
         if (isOwner) {
-            predicate.and(QBooking.booking.item.owner.id.eq(Math.toIntExact(userId)));
+            predicate.and(QBooking.booking.item.owner.id.eq(userId));
         } else {
-            predicate.and(QBooking.booking.booker.id.eq(Math.toIntExact(userId)));
+            predicate.and(QBooking.booking.booker.id.eq(userId));
         }
 
         LocalDateTime now = LocalDateTime.now();

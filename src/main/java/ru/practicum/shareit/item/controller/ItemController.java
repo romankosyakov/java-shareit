@@ -6,10 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.item.dto.NewItemDto;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,9 +29,18 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ItemResponseDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                   @PathVariable Long itemId) {
-        log.debug("Вызван метод получения вещи с ID: {} пользователя с ID: {}", itemId, userId);
-        return itemService.getItem(itemId, userId);
+                                   @PathVariable Long id) {
+        log.debug("Вызван метод получения вещи с ID: {} пользователя с ID: {}", id, userId);
+        return itemService.getItem(id, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long itemId,
+                                 @RequestBody @Valid NewCommentDto commentDto) {
+        log.debug("Добавление комментария к вещи ID: {} от пользователя ID: {}", itemId, userId);
+        return itemService.addComment(userId, itemId, commentDto);
     }
 
     @PostMapping

@@ -8,4 +8,6 @@ import lombok.Data;
 public class BookingShortDto {
     private Long id;
     private Long bookerId;
+    private Long itemId;
+    private String itemName;
 }

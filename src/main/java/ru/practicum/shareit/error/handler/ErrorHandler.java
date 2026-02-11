@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.error.dto.ErrorResponseDto;
+import ru.practicum.shareit.exceptions.ConditionsNotMetException;
 import ru.practicum.shareit.exceptions.ConflictException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -50,6 +51,13 @@ public class ErrorHandler {
         });
         log.error("Ошибки валидации полей: {}", errors);
         return new ErrorResponseDto("Validation Error", "Invalid request parameters", errors);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto handleConditionsNotMet(final ConditionsNotMetException e) {
+        log.error("Нарушение условий: {}", e.getMessage());
+        return new ErrorResponseDto("Bad Request", e.getMessage());
     }
 
     @ExceptionHandler

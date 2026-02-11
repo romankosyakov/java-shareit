@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @ToString(onlyExplicitlyIncluded = true)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Booking {
 
     @Id
