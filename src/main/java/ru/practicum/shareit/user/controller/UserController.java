@@ -10,8 +10,6 @@ import ru.practicum.shareit.user.dto.NewUserDto;
 import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validation.CreateValidation;
-import ru.practicum.shareit.validation.UpdateValidation;
 
 import java.util.List;
 
@@ -37,13 +35,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto addNewUser(@Validated(CreateValidation.class) @Valid @RequestBody NewUserDto newUserDto) {
+    public UserResponseDto addNewUser(@Valid @RequestBody NewUserDto newUserDto) {
         log.debug("Вызван метод добавления пользователя");
         return userService.addNewUser(newUserDto);
     }
 
     @PatchMapping("/{id}")
-    public UserResponseDto updateUser(@Validated(UpdateValidation.class) @PathVariable("id") Integer id,
+    public UserResponseDto updateUser(@Valid @PathVariable("id") Integer id,
                                       @RequestBody UpdateUserDto updateUserDto) {
         log.debug("Вызван метод обновления пользователя с ID: {}", id);
         return userService.updateUser(id, updateUserDto);

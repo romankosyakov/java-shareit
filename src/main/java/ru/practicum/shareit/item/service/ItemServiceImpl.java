@@ -29,11 +29,6 @@ public class ItemServiceImpl implements ItemService {
         userStorage.getUser(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
 
-        boolean hasNotAvailableValue = newItemDto.getAvailable() == null;
-        boolean hasNotNameValue = newItemDto.getName() == null || newItemDto.getName().isBlank();
-        boolean hasNotDescriptionValue = newItemDto.getDescription() == null;
-
-
         Item item = ItemMapper.toEntity(newItemDto, userId);
         Item savedItem = itemStorage.addNewItem(item);
 
