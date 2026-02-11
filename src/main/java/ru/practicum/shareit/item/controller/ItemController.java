@@ -24,29 +24,30 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemResponseDto> getUserItems(@RequestHeader("X-Sharer-User-Id") Integer id) {
+    public List<ItemResponseDto> getUserItems(@RequestHeader("X-Sharer-User-Id") Long id) {
         log.debug("Вызван метод получения списка вещей пользователя с ID: {}", id);
         return itemService.getUserItems(id);
     }
 
     @GetMapping("/{id}")
-    public ItemResponseDto getItem(@PathVariable("id") Integer itemId) {
-        log.debug("Вызван метод получения вещи с ID: {}", itemId);
-        return itemService.getItem(itemId);
+    public ItemResponseDto getItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @PathVariable Long itemId) {
+        log.debug("Вызван метод получения вещи с ID: {} пользователя с ID: {}", itemId, userId);
+        return itemService.getItem(itemId, userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemResponseDto addNewItem(@Valid @RequestHeader("X-Sharer-User-Id") Integer id,
+    public ItemResponseDto addNewItem(@Valid @RequestHeader("X-Sharer-User-Id") Long id,
                                       @RequestBody @Valid NewItemDto newItemDto) {
         return itemService.addNewItem(id, newItemDto);
     }
 
     @PatchMapping("/{id}")
     public ItemResponseDto updateItem(@Valid
-                                      @RequestHeader("X-Sharer-User-Id") Integer userId,
+                                      @RequestHeader("X-Sharer-User-Id") Long userId,
                                       @RequestBody UpdateItemDto updateItemDto,
-                                      @PathVariable("id") Integer id) {
+                                      @PathVariable("id") Long id) {
         return itemService.updateItem(userId, id, updateItemDto);
     }
 

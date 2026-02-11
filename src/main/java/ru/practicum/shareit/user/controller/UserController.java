@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getUser(@PathVariable("id") Integer id) {
+    public UserResponseDto getUser(@PathVariable("id") Long id) {
         log.debug("Вызван метод получения пользователя с ID: {}", id);
         return userService.getUser(id);
     }
@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserResponseDto updateUser(@Valid @PathVariable("id") Integer id,
+    public UserResponseDto updateUser(@Valid @PathVariable("id") Long id,
                                       @RequestBody UpdateUserDto updateUserDto) {
         log.debug("Вызван метод обновления пользователя с ID: {}", id);
         return userService.updateUser(id, updateUserDto);
@@ -49,7 +49,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable("id") Integer id) {
+    public void deleteUser(@PathVariable("id") Long id) {
         log.debug("Вызван метод удаления пользователя");
         userService.deleteUser(id);
     }

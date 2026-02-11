@@ -12,28 +12,29 @@ import ru.practicum.shareit.user.dto.UpdateUserDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
     public List<UserResponseDto> getAllUsers() {
-        return userStorage.getAllUsers()
+        return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toResponseDto)
                 .toList();
     }
 
     @Override
-    public UserResponseDto getUser(Integer id) {
-        return userStorage.getUser(id)
+    public UserResponseDto getUser(Long id) {
+        return userRepository.findById(id)
                 .map(UserMapper::toResponseDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь c id: " + id + " не найден"));
     }
@@ -45,37 +46,37 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null) {
             throw new ValidationException("Email обязателен для заполнения.");
         }
-        boolean isNotAlreadySaved = userStorage.findByEmail(user.getEmail()).isEmpty();
+        boolean isNotAlreadySaved = userRepository.findByEmail(user.getEmail()).isEmpty();
 
         if (!isNotAlreadySaved) {
             throw new ConflictException("Пользователь с таким email уже существует.");
         }
 
-        return UserMapper.toResponseDto(userStorage.addNew(user));
+        return UserMapper.toResponseDto(userRepository.save(user));
     }
 
     @Override
-    public UserResponseDto updateUser(Integer id, UpdateUserDto updateUserDto) {  // Изменить сигнатуру
-        User user = userStorage.getUser(id)
+    public UserResponseDto updateUser(Long id, UpdateUserDto updateUserDto) {  // Изменить сигнатуру
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
 
         // Проверка уникальности email
         if (updateUserDto.getEmail() != null && !updateUserDto.getEmail().equals(user.getEmail())) {
-            if (userStorage.existsByEmail(updateUserDto.getEmail())) {
+            if (userRepository.findByEmail(updateUserDto.getEmail()).isPresent()) {
                 throw new ConflictException("Email уже используется другим пользователем");
             }
         }
 
         UserMapper.updateEntityFromDto(updateUserDto, user);
 
-        userStorage.update(user);
+        userRepository.save(user);
 
         log.info("Обновлен пользователь: '{}' (ID: {})", user.getName(), user.getId());
         return UserMapper.toResponseDto(user);
     }
 
     @Override
-    public void deleteUser(Integer id) {
-        userStorage.delete(id);
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
     }
 }
