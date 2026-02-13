@@ -33,18 +33,4 @@ public class ItemRequest {
     @Builder.Default
     @ToString.Include
     private LocalDateTime created = LocalDateTime.now();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-        ItemRequest other = (ItemRequest) o;
-        return id != null && id.equals(other.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
