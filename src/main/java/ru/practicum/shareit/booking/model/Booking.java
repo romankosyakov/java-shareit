@@ -11,13 +11,14 @@ import java.time.LocalDateTime;
 @Table(name = "bookings")
 @Data
 @Builder
-@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 
@@ -44,5 +45,4 @@ public class Booking {
     @ToString.Include
     @Builder.Default
     private Status status = Status.WAITING;
-
 }

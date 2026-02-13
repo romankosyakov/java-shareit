@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,9 +106,15 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     public List<BookingDto> getAllUserBookings(Long userId, State state) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new ConditionsNotMetException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         List<Booking> bookings = findBookings(userId, state, false);
+
+        bookings.forEach(booking -> {
+            Hibernate.initialize(booking.getItem());
+            Hibernate.initialize(booking.getItem().getOwner());
+            Hibernate.initialize(booking.getBooker());
+        });
 
         return bookings.stream()
                 .map(BookingMapper::mapToBookingDto)
@@ -121,6 +128,12 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         List<Booking> bookings = findBookings(userId, state, true);
+
+        bookings.forEach(booking -> {
+            Hibernate.initialize(booking.getItem());
+            Hibernate.initialize(booking.getItem().getOwner());
+            Hibernate.initialize(booking.getBooker());
+        });
 
         return bookings.stream()
                 .map(BookingMapper::mapToBookingDto)
@@ -164,7 +177,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
         }
 
-        return (List<Booking>) bookingRepository.findAll(predicate,QSort.by(QBooking.booking.start.desc())
+        return (List<Booking>) bookingRepository.findAll(predicate, QSort.by(QBooking.booking.start.desc())
         );
     }
 

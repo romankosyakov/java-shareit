@@ -10,13 +10,14 @@ import java.time.LocalDateTime;
 @Table(name = "item_requests")
 @Data
 @Builder
-@ToString(onlyExplicitlyIncluded = true)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // PROTECTED для Hibernate
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 

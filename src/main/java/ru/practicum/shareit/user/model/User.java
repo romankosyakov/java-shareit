@@ -7,13 +7,14 @@ import lombok.*;
 @Table(name = "users")
 @Data
 @Builder
-@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 
@@ -24,5 +25,4 @@ public class User {
     @Column(name = "name", nullable = false)
     @ToString.Include
     private String name;
-
 }

@@ -12,13 +12,14 @@ import java.util.Set;
 @Table(name = "items")
 @Data
 @Builder
-@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 
@@ -48,5 +49,4 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<Comment> comments = new HashSet<>();
-
 }
