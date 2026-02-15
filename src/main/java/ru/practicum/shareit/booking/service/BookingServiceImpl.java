@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ConditionsNotMetException("Бронирование с id: " + bookingId + "не найдено."));
 
-        Long ownerId = Long.valueOf(booking.getItem().getOwner().getId());
+        Long ownerId = booking.getItem().getOwner().getId();
         userRepository.findById(userId)
                 .orElseThrow(() -> new ConditionsNotMetException("Пользователь с id: " + userId + "не найден."));
 
@@ -80,6 +79,10 @@ public class BookingServiceImpl implements BookingService {
             throw new ConditionsNotMetException("Статус бронирования уже изменён");
         }
 
+        if (booking.getStart().isBefore(LocalDateTime.now())) {
+            throw new ConditionsNotMetException("Нельзя подтвердить уже начавшееся бронирование");
+        }
+
         booking.setStatus(approved ? Status.APPROVED : Status.REJECTED);
 
         return BookingMapper.mapToBookingDto(bookingRepository.save(booking));
@@ -90,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ConditionsNotMetException("Бронирование с id: " + bookingId + "не найдено."));
 
-        Long ownerId = Long.valueOf(booking.getItem().getOwner().getId());
+        Long ownerId = booking.getItem().getOwner().getId();
 
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + "не найден."));
@@ -110,12 +113,6 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = findBookings(userId, state, false);
 
-        bookings.forEach(booking -> {
-            Hibernate.initialize(booking.getItem());
-            Hibernate.initialize(booking.getItem().getOwner());
-            Hibernate.initialize(booking.getBooker());
-        });
-
         return bookings.stream()
                 .map(BookingMapper::mapToBookingDto)
                 .toList();
@@ -129,18 +126,12 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = findBookings(userId, state, true);
 
-        bookings.forEach(booking -> {
-            Hibernate.initialize(booking.getItem());
-            Hibernate.initialize(booking.getItem().getOwner());
-            Hibernate.initialize(booking.getBooker());
-        });
-
         return bookings.stream()
                 .map(BookingMapper::mapToBookingDto)
                 .toList();
     }
 
-    public List<Booking> findBookings(Long userId, State state, boolean isOwner) {
+    private List<Booking> findBookings(Long userId, State state, boolean isOwner) {
         BooleanBuilder predicate = new BooleanBuilder();
 
         if (isOwner) {
